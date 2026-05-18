@@ -1,0 +1,36 @@
+#include <iostream>
+using namespace std;
+
+int main(){
+    int np,nf,pageSize,la,pageNum,offset,frameNum,pa;
+    cout <<"Enter number of pages : "<< endl;
+    cin >> np;
+    int pageTable[np];
+    cout <<"Enter number of frames : "<< endl;
+    cin >> nf;
+    cout <<"Enter page size : "<< endl;
+    cin >> pageSize;
+    
+    for(int i = 0; i < np; i++){
+        cout << "Enter frame number for page" << i+1 << endl;
+        cin >> pageTable[i];
+    }
+
+    cout <<"Enter logical address : "<< endl;
+    cin >> la;
+
+    pageNum = la/pageSize;
+    offset = la%pageSize;
+    frameNum = pageTable[pageNum];
+    pa = frameNum * pageSize + offset;
+    
+    cout << endl << "This is the page number : " << pageNum << endl;
+    cout << "This is the logical address : " << la << endl;
+    cout << "This is the physical address : " << pa << endl;
+    cout << "This is the offset value : " << offset << endl;
+    cout << "This is the frame number : " << frameNum << endl;
+    cout << "This is the page size : " << pageSize << endl;
+
+
+    return 0;
+}
