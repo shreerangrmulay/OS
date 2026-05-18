@@ -1,0 +1,366 @@
+#include <iostream>
+#include<fstream>
+#include<string>
+using namespace std;
+
+
+char M[100][4];
+char r[4],ir[4];
+int gdcnt;
+int ic,c;
+int m;
+
+
+
+
+void displayMemory()
+{
+    cout<<endl << "Memory :" <<endl;
+    for(int i = 0; i < 100; i++)
+    {
+        cout << i << " ";
+        for(int j = 0; j < 4; j++)
+        {
+            
+            cout << M[i][j] << " ";
+        }
+
+
+        cout << endl;
+    }
+}
+
+
+void init()
+{
+    ic = 0;
+    c = 0;
+    m = 0;
+    gdcnt = 0;
+    cout << "Memory :" <<endl;
+    for(int i = 0; i < 100; i++)
+    {
+        cout << i << " ";
+        for(int j = 0; j < 4; j++)
+        {
+            
+            M[i][j] = '`';
+            cout << M[i][j] << " ";
+        }
+
+        cout << endl;
+    }
+
+
+    cout<< endl << "Resistor :" <<endl;
+
+
+    for(int i = 0; i < 4; i++)
+    {
+        r[i] = '`';
+        cout << r[i] << " ";
+    }
+
+
+    cout<< endl << "Instruction resistor :" <<endl;
+
+
+    for(int i = 0; i < 4; i++)
+    {
+        ir[i] = '`';
+        cout << ir[i] << " ";
+    }
+
+
+    cout<< endl << "Instruction counter: " << ic ;
+
+
+    cout<< endl << "counter: " << c <<endl;
+
+
+   
+
+}
+
+
+void load(ifstream &file)
+{
+    string line;
+
+
+    getline(file,line);
+
+
+    if(line.substr(0,4) == "$AMJ")
+    {
+        init();
+    }
+
+
+
+
+    while(getline(file,line) && line.substr(0,4) != "$DTA")
+    {
+        for(int i = 0; i < line.size(); i += 4)
+        {
+            if(line[i] == 'H')
+            {
+                M[m][0] = 'H';
+                m++;
+                break;
+            }
+
+            for(int j = 0; j < 4; j++)
+            {
+                M[m][j] = line[i+j];   
+            }
+
+            m++;
+        }
+    }
+
+
+    displayMemory();
+
+
+}
+
+void print2Lines()
+{
+    ofstream fout("output.txt", ios::app);
+
+    fout << "\n";  
+    fout << "\n";  
+
+    fout.close();  
+}
+
+void getData(int n)
+{
+    string line;
+    ifstream file ("input.txt");
+
+    while(getline(file,line) && line.substr(0,4) != "$DTA") {}
+
+
+    for(int i = 0; i < gdcnt; i++)
+    {
+        getline(file,line);
+    }
+
+    for(int i = 0; i < line.size(); i += 4)
+    {
+
+        for(int j = 0; j < 4; j++)
+        {
+            if(i+j < line.size())
+            {
+                M[n][j] = line[i+j];
+            }
+        }
+
+        n++;
+    }
+
+    displayMemory();
+
+}
+
+void printData(int n)
+{
+    ofstream fout("output.txt",ios::app);
+
+    bool stop = false;
+    for(int i = n; i < n + 10 && !stop; i++)
+    {
+        for(int j = 0; j < 4; j++)
+        {
+            if(M[i][j] != '`')
+                fout << M[i][j] ;
+            else
+            {
+                stop = true;
+                break;
+            }    
+                
+        }
+    }
+
+    
+    fout << "\n";
+
+    fout.close();
+}
+
+void lr(int n)
+{
+    for(int i = 0; i < 4; i++)
+    {
+        r[i] = M[n][i];
+    }
+}
+
+void sr(int n)
+{
+    for(int i = 0; i < 4; i++)
+    {
+        M[n][i] = r[i];
+    }
+}
+
+void cr(int n)
+{
+    bool same = true;
+
+    for(int i = 0; i < 4; i++)
+    {
+        if(M[n][i] != r[i])
+        {
+            same = false;
+            break;
+        }
+    }
+
+    if(same)
+    {
+        c = 1;
+    }
+    else
+    {
+        c = 0; 
+    }
+    
+}
+
+void bt(int n)
+{
+    if(c == 1)
+    {
+        ic = n;
+    }
+}
+
+void MOS(int SI, int n)
+{
+    
+    if(SI == 1)
+    {
+        gdcnt++;
+        getData(n);
+    }
+    else if(SI == 2)
+    {
+        printData(n);
+    }
+    else if(SI == 3)
+    {
+        print2Lines();
+    }
+    else if(SI == 4)
+    {
+        lr(n);
+    }
+    else if(SI == 5)
+    {
+        sr(n);
+    } 
+    else if(SI == 6)
+    {
+        cr(n);
+    }
+    else if(SI == 7)
+    {
+        bt(n);
+    }
+
+}
+
+
+
+
+void stExec()
+{
+    do
+    {
+        for(int j = 0; j < 4; j++)
+        {
+            ir[j]=M[ic][j];
+        }
+        ic++;
+
+        
+        if(ir[0] == 'G')
+        {
+            int n = ir[2] - '0';
+            n = n*10 + ir[3]-'0';
+            MOS(1,n);
+        }
+        else if(ir[0] == 'P')
+        {
+            int n = ir[2] - '0';
+            n = n*10 + ir[3]-'0';
+            MOS(2,n);
+        }
+        else if(ir[0] == 'H')
+        {
+            MOS(3,-1);
+            break;
+        }
+        else if(ir[0] == 'L')
+        {
+            int n = ir[2] - '0';
+            n = n*10 + ir[3]-'0';
+            MOS(4,n);
+        }
+        else if(ir[0] == 'S')
+        {
+            int n = ir[2] - '0';
+            n = n*10 + ir[3]-'0';
+            MOS(5,n);
+        }
+        else if(ir[0] == 'C')
+        {
+            int n = ir[2] - '0';
+            n = n*10 + ir[3]-'0';
+            MOS(6,n);
+        }
+        else if(ir[0] == 'B')
+        {
+            int n = ir[2] - '0';
+            n = n*10 + ir[3]-'0';
+            MOS(7,n);
+        }
+        else
+        {
+            cout << endl << endl << "Incorrect instruction program terminated"<< endl;
+            return;
+        }
+
+        
+    }while(ir[0] != '`');
+    
+        
+    
+}
+
+
+
+int main()
+{
+
+    ifstream input("input.txt");
+   
+    if(!input)
+    {
+        cout<<"input.txt not found !";
+        return 1;
+    }
+
+    load(input);  
+
+    
+    stExec();
+    displayMemory();
+    return 0;
+
+}
