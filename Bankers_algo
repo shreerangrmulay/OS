@@ -1,0 +1,115 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main()
+{
+    int np;
+    int nr;
+
+    cout<<"Enter Number of processes: ";
+    cin >> np;
+    cout<<endl<<"Enter Number of resources: ";
+    cin >> nr;
+
+    int allocation[np][nr],max[np][nr],available[nr],need[np][nr],safeseq[np],flag = 0,k = 0;
+    vector<int>finish(np,0);
+
+    cout<<endl<<"Enter allocaton matrix:- "<<endl;
+    for(int i = 0; i < np; i++)
+    {
+        cout<<"Enter resourses for process "<<i+1<<" :"<<endl;
+        for(int j = 0; j < nr; j++)
+        {
+            cin>>allocation[i][j];
+        }
+    }
+
+    cout<<endl<<"Enter max resource matrix:-  "<<endl;
+    for(int i = 0; i < np; i++)
+    {
+        cout<<"Enter max resourses for process "<<i+1<<" :"<<endl;
+        for(int j = 0; j < nr; j++)
+        {
+            cin>>max[i][j];
+        }
+    }
+
+    cout<<endl<<"Enter available resources:- "<<endl;
+
+    for(int i = 0; i < nr; i++)
+    {
+        cin>>available[i];
+    }
+
+    for(int i = 0; i < np; i++)
+    {
+        for(int j = 0; j < nr; j++)
+        {
+            need[i][j] = max[i][j]-allocation[i][j];
+        }
+    }
+
+    bool done = true;
+    bool seqpos = true;
+    while (seqpos)
+    {
+        seqpos = false;
+
+        for(int i = 0; i < np; i++)
+        {
+            flag = 0;
+            if(finish[i] == 0)
+            {
+                for(int j = 0; j < nr; j++)
+                {
+                    if(need[i][j] > available[j])
+                    {
+                        flag = 1;
+                        break;
+                    }
+                }
+            }
+
+            if(flag == 0 && finish[i] == 0)
+            {
+                finish[i] = 1;
+                safeseq[k] = i;
+                seqpos = true;
+                k++;
+
+                for(int j = 0; j < nr; j++)
+                {
+                    available[j]+=allocation[i][j]; 
+                }
+            }
+            
+        }
+
+    }
+    
+    for(int i = 0; i < np; i++)
+    {
+        if(finish[i] == 0)
+        {
+            done = false;
+            break;
+        }
+    }
+
+    if(done == false)
+    {
+        cout << "There is no possible safe sequence for the given resources !";
+        return 1;
+    }
+
+    cout<<endl<<"Safe sequence = ";
+
+    for(int i = 0; i < np; i++)
+    {
+        cout<<"p"<<safeseq[i]<<" ";
+    }
+    
+    return 0;
+
+}
