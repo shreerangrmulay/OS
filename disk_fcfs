@@ -1,0 +1,28 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+int main(){
+    int n;
+    cout << "Enter number of tracks : ";
+    cin >> n;
+    int RQ[n];
+    for(int i = 0; i < n; i++){
+        cout << "Enter the element of RQ : " << i+1 << " ";
+        cin >> RQ[i];
+    }
+    cout << "Enter the starting value : ";
+    int initial;
+    cin >> initial;
+    int i, seektime, thm = 0;
+    
+    for(int i = 0; i < n; i++){
+        thm = thm + abs(initial - RQ[i]);
+        initial = RQ[i];
+    }
+
+    seektime = thm;
+    
+    cout << "The total head movement : " << thm << endl;
+    cout << "The seek time is : " << seektime;
+    return 0;
+}
