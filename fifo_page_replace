@@ -1,0 +1,63 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main()
+{
+    int nf,np,hit = 0, miss = 0, flag = 0,pos = 0;
+    float hit_ratio = 0;
+    float miss_ratio = 0;
+    cout<<"Enter number of frames: ";
+    cin>>nf;
+    cout<<endl<<"Enter number of pages: ";
+    cin>>np;
+
+    string p;
+    int f[nf];
+
+    cout<<endl<<"Enter page reference string: ";
+    cin>>p;
+
+    cout<<endl<<"Ram memory: ";
+    for(int i = 0; i < nf; i++)
+    {
+        f[i] = -1;
+       cout << f[i] <<" ";
+    }
+
+    for(int i = 0; i < np; i++)
+    {
+        flag = 0;
+        for(int j = 0; j < nf; j++)
+        {
+            if(f[j] == (p[i]-'0'))
+            {
+                hit++;
+                flag = 1;
+                break;
+            }
+        }
+
+        if(flag == 0)
+        {
+            f[pos] = p[i]-'0';
+            pos = (pos + 1)%nf;
+            miss++;
+        }
+
+        cout<<endl<<"Ram memory for "<< p[i] <<": ";
+        for(int k = 0; k < nf; k++)
+        {
+            cout << f[k]<<" ";
+        }
+    }
+
+    hit_ratio = (1.0*hit)/np;
+    miss_ratio = (1.0*miss)/np;
+
+    cout<<endl<<"Hit ratio: "<<hit_ratio; 
+    cout<<endl<<"Miss ratio: "<<miss_ratio; 
+
+    return 0;
+
+}
