@@ -1,0 +1,149 @@
+#include<iostream>
+using namespace std;
+
+class process
+{
+
+    public:
+
+    int pid;
+    int at;
+    int bt;
+    int st;
+    int ct;
+    int tat;
+    int wt;
+    int rt;
+
+    void init(int pid,int at,int bt)
+    {
+        this->pid = pid;
+        this->at = at;
+        this->bt = bt;
+        st = -1;
+    }
+};
+
+int main()
+{
+    
+    
+    int n = 0;
+    int tq = 0;
+    cout << "Enter number of processes: ";
+    cin >> n;
+    cout<<endl << "Enter time quantum: ";
+    cin >> tq;
+    int temp_bt[n];
+
+    process ps[n];
+    int pid = 0;
+    int at = 0;
+    int bt = 0;
+
+
+    for(int i = 0; i < n; i++)
+    {
+        cout<<endl<< "Enter process id for process " << i+1<< ": ";
+        cin >> pid;
+        cout<<endl<< "Enter arrival time for process:  " << i+1<<": ";
+        cin >> at;
+        cout<<endl<< "Enter burst time for process  " << i+1<<": ";
+        cin >> bt;
+
+        temp_bt[i] = bt;
+
+        ps[i].init(pid,at,bt);
+        
+    }
+
+   
+    
+    bool finish = false;
+    int curt = ps[0].at;
+
+    while(!finish)
+    {
+        finish = true;
+
+        for(int i = 0; i < n; i++)
+        {
+            if(temp_bt[i] > tq)
+            {
+                if(ps[i].st == -1)
+                {
+                    if(curt < ps[i].at)
+                    {
+                        ps[i].st = ps[i].at;
+                        curt = ps[i].at;
+                    }
+                    else
+                    {
+                        ps[i].st = curt;
+                    }
+                }
+                temp_bt[i] = temp_bt[i] - tq;
+                finish = false;
+                curt = curt + tq;
+
+            }
+            else if(temp_bt[i] <= tq && temp_bt[i] != 0)
+            {
+                if(ps[i].st == -1)
+                {
+                    if(curt < ps[i].at)
+                    {
+                        ps[i].st = ps[i].at;
+                        curt = ps[i].at;
+                    }
+                    else
+                    {
+                        ps[i].st = curt;
+                    }
+                }
+                curt = curt + temp_bt[i];
+                temp_bt[i] = 0;
+                ps[i].ct = curt;
+                finish = false;
+            }
+
+        }
+
+    }
+
+    int atat = 0;
+    int awt = 0;
+    int art = 0;
+    float throughput = n;
+
+    for(int i = 0; i < n; i++)
+    {
+        ps[i].tat = ps[i].ct-ps[i].at;
+        ps[i].wt = ps[i].tat-ps[i].bt;
+        ps[i].rt = ps[i].st-ps[i].at;
+        atat += atat + ps[i].tat;
+        awt += awt + ps[i].wt;
+        art += art + ps[i].rt;
+
+    }
+
+    throughput = 1.0 * throughput/(ps[n-1].ct-ps[0].at);
+    awt = awt/n;
+    art = art/n;
+    atat = atat/n;
+
+    cout<< endl<<"Pid "<<"AT " << "BT " << "CT "<< "TAT " << "WT " <<"RT ";   
+    for(int i = 0; i < n; i++)
+    {
+        cout<<endl<<ps[i].pid<<"   "<<ps[i].at<<"  "<<ps[i].bt<<"  "<<ps[i].ct<<"  "
+        <<ps[i].tat<<"   "<<ps[i].wt<<"  "<<ps[i].rt;
+    }
+
+    cout<<endl<<endl<<"ATAT = "<<atat;
+    cout<<endl<<"AWT = "<<awt; 
+    cout<<endl<<"ART = "<<art; 
+    cout<<endl<<"Throughput = "<<throughput; 
+    
+    
+    return 0;
+}
