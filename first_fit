@@ -1,0 +1,57 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int nb, np;
+
+    cout << "Enter number of memory blocks: ";
+    cin >> nb;
+
+    vector<int> block(nb);
+    cout << "Enter block sizes:\n";
+    for(int i = 0; i < nb; i++) 
+    {
+        cin >> block[i];
+    }
+
+    cout << "Enter number of processes: ";
+    cin >> np;
+
+    vector<int> process(np);
+    cout << "Enter process sizes:\n";
+    for(int i = 0; i < np; i++) 
+    {
+        cin >> process[i];
+    }
+
+    vector<int> allocation(np, -1); 
+
+    
+    for(int i = 0; i < np; i++) 
+    {
+        for(int j = 0; j < nb; j++) 
+        {
+            if(block[j] >= process[i]) 
+            {
+                allocation[i] = j;
+                block[j] -= process[i];
+                break;
+            }
+        }
+    }
+
+    
+    cout << "\nProcess No\tProcess Size\tBlock No\n";
+    for(int i = 0; i < np; i++) 
+    {
+        cout << i+1 << "\t\t" << process[i] << "\t\t";
+        if(allocation[i] != -1)
+            cout << allocation[i] + 1;
+        else
+            cout << "Not Allocated";
+        cout << endl;
+    }
+
+    return 0;
+}
