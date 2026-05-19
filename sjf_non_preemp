@@ -1,0 +1,87 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+
+struct Process
+{
+    int PID,AT,BT,CT,TAT,WT;
+    bool completed = false;
+};
+void ShortestJobFirst(){
+    int n;
+    cout<<"Enter the number of Processes:-";
+    cin>>n;
+    vector<Process>P(n);
+    vector<int>v;
+    float Avg_TAT=0;
+    float Avg_wt=0;
+
+    for(int i=0;i<n;i++){
+        int Process_ID,Arrival_Time,Burst_time;
+        cout<<"Enter Processor ID:-";
+        cin>>Process_ID;
+        P[i].PID=Process_ID;
+
+        cout<<"Enter Arrival time of process(ms):-";
+        cin>>Arrival_Time;
+        P[i].AT=Arrival_Time;
+
+        cout<<"Enter Burst Time(ms):-";
+        cin>>Burst_time;
+        P[i].BT=Burst_time;
+    }
+    int current_time=0;
+    int count=0;
+    //new logic for sjf
+    while(count<n){
+        int ind=-1;
+        int minBT=INT_MAX;
+        for(int i=0;i<n;i++){
+            if(P[i].AT<=current_time && P[i].completed== false){
+                if(P[i].BT < minBT){
+                    minBT=P[i].BT;
+                    ind =i;
+                }
+            }
+            else continue;
+        }
+        if(ind == -1){
+            current_time++;
+        }
+        else{
+            current_time += P[ind].BT;
+
+            P[ind].CT=current_time;
+            P[ind].TAT=P[ind].CT-P[ind].AT;
+            P[ind].WT=P[ind].TAT-P[ind].BT;
+            P[ind].completed=true;
+            count++;
+        }
+    }
+
+    for(int i=0;i<n;i++){
+        for(int j=i;j<n;j++){
+            if(P[i].CT > P[j].CT){
+                swap(P[i],P[j]);
+            }
+        }
+    }
+
+    cout<<"PID"<<"\tAT"<<"\tBT"<<"\tCT"<<"\tTAT"<<"\tWT\n";
+    for(int i=0;i<n;i++){
+        cout<<P[i].PID<<"\t"<<P[i].AT<<"\t"<<P[i].BT<<"\t"<<P[i].CT<<"\t"<<P[i].TAT<<"\t"<<P[i].WT<<endl;
+    }
+    cout<<"\nAverage TAT is:- ";
+    for(int i=0;i<n;i++){
+        Avg_TAT+=P[i].TAT;
+    }
+    cout<<Avg_TAT/n;
+    cout<<"\nAverage WT is :- ";
+    for(int i=0;i<n;i++){
+        Avg_wt+=P[i].WT;
+    }
+    cout<<(Avg_wt/n);
+}
+int main(){
+    ShortestJobFirst();
+}
