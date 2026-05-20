@@ -1,0 +1,53 @@
+#include <stdio.h>
+void BuddySystem()
+{
+    int memorySize, processCount;
+
+    printf("Enter Total Memory Size (Power of 2): ");
+    scanf("%d", &memorySize);
+
+    printf("Enter Number of Processes: ");
+    scanf("%d", &processCount);
+
+    int process[processCount];
+
+    for (int i = 0; i < processCount; i++)
+    {
+        printf("Enter Memory Required for Process %d: ", i + 1);
+        scanf("%d", &process[i]);
+    }
+
+    printf("\nBuddy System Allocation:\n");
+    printf("----------------------------\n");
+
+    for (int i = 0; i < processCount; i++)
+    {
+        int blockSize = 1;
+
+        while (blockSize < process[i])
+        {
+            blockSize *= 2;
+        }
+
+        if (blockSize <= memorySize)
+        {
+            printf("Process %d -> Requested: %d, Allocated Block: %d\n",
+                   i + 1, process[i], blockSize);
+
+            memorySize -= blockSize; 
+        }
+        else
+        {
+            printf("Process %d -> Requested: %d, Allocation Failed\n",
+                   i + 1, process[i]);
+        }
+    }
+
+    printf("\nRemaining Memory: %d\n", memorySize);
+}
+
+int main()
+{
+    BuddySystem();
+    return 0;
+}
